@@ -1,0 +1,46 @@
+{% extends 'layout/layout_main.html' %}
+{% load frame_plugins %}
+{% load frame_html %}
+
+{% block css_files %}
+    {% jquery_validation_engine 'css' %}
+{% endblock %}
+
+{% block js_files %}
+    {% jquery_validation_engine 'js' %}
+{% endblock %}
+
+{% block js_code %}
+<script>
+ {% jquery_validation_engine 'jscode' form_id='form' %}
+</script>
+{% endblock %}
+
+{% block pagecontent %}
+{% if messages %}
+<div class="alert alert-warning alert-dismissible">
+<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+<h5><i class="icon fas fa-exclamation-triangle"></i>执行错误</h5>
+    {% for message in messages %}{{ message|safe }}{% endfor %}
+</div>
+    {% endif %}
+<div class="card">
+          <div class="card-header">
+              <h3 class="card-title">使用 wget 将文件下载到：{{ path }}</h3>
+          </div>
+<div class="card-body">
+<form id="form" name="form" method="post">
+{% csrf_token %} {{ form.path }}
+{{ form.errors }}
+    <div class="form-group">
+    {{ form.url.label_tag }}{{ form.url }}
+    {% if form.url.errors %}
+          <span class="text-danger">{% for error in form.url.errors %}{{ error }}{% endfor %}</span>
+    {% endif %}
+    </div>
+    </div>
+     <div class="card-footer">{% form_btn 'submit' %}</div>
+</form>
+</div>
+{% endblock %}
+

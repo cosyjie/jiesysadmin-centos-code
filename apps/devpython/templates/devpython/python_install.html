@@ -1,0 +1,122 @@
+{% extends 'layout/layout_main.html' %}
+{% load frame_html %}
+{% load frame_plugins %}
+
+{% block css_files %}
+    {% jquery_validation_engine 'css' %}
+    {% select2 'css' %}
+{% endblock %}
+{% block js_files %}
+    {% jquery_validation_engine 'js' %}
+    {% select2 'js' %}
+{% endblock %}
+{% block js_code %}
+<script type="text/javascript">
+$(document).ready(function(){
+    {% select2 'jscode' %}
+    {% jquery_validation_engine 'jsconde' form_id='form' %}
+})
+
+    {#function checkfile() {#}
+    {#    if ($('#id_version').val() != '') {#}
+    {#        $('#card-footer').html('');#}
+    {#        $('#card-footer').append(#}
+    {#            '<button type="button" class="btn btn-info" id="btn_download" onclick="download();">下载安装文件</button>'#}
+    {#        );#}
+    {#    }else{#}
+    {#        alert('请选择内容！');#}
+    {#    }#}
+    {# } #}
+
+{#    function download(){#}
+{#        $('#showprocess').html('');#}
+{#        $('#runinfo').html('').append('<p>开始下载Python编译文件。。。。</p><p>' +#}
+{#            '<i class="fas fa-3x fa-sync-alt fa-spin" id="load"></i></p>');#}
+{#        $.ajax({#}
+{#            type: 'POST',#}
+{#            dataType: "json",#}
+{#            url: '{% url 'devpython:install_download' %}',#}
+{#            data: $('#form').serialize(),#}
+{#            success: function(result){#}
+{#                if (result.run_end == '0'){#}
+{#                    $('#runinfo').html('');#}
+{#                    $('#card-footer').html('');#}
+{#                    $('#runinfo').append('<p>下载完成！可以尝试开始安装~</p>');#}
+{#                    $('#card-footer').append(#}
+{#'<button type="button" class="btn btn-info ml-2" id="btn_run" onclick="runsetup();">开始编译安装（需要时间很长，请勿刷新）</button>'#}
+{#                    );#}
+{#                }else{#}
+{#                    $('#load').remove();#}
+{#                    $('#runinfo').append('<p>下载失败。。。</p>');#}
+{#                }#}
+{#                $('#showprocess').html(result.showprocess);#}
+{#            },#}
+{#            error: function (){#}
+{#                 ('#runinfo').html('');#}
+{#                $('#runinfo').append('<p>提交检查有故障!~</p>');#}
+{#            }#}
+{#        })#}
+{#    }#}
+
+    function runsetup(){
+        $('#runinfo').html('');
+        $('#showprocess').html('');
+        $('#runinfo').append('<p>开始编译安装，时间较长，请勿刷新，等待自行跳转。。。。</p><p>' +
+            '<i class="fas fa-3x fa-sync-alt fa-spin"></i></p>');
+        $.ajax({
+            type: 'POST',
+            dataType: "json",
+            url: '{% url 'devpython:install_run' %}',
+            data: $('#form').serialize(),
+            success: function(result){
+                if (result.run_end == '0'){
+                    $(location).attr('href', "{% url 'devpython:index' %}");
+                }else{
+                    $('#runinfo').html('');
+                    $('#runinfo').append('<p>安装失败,请检查。。。</p>');
+                    $('#showprocess').html(result.showprocess);
+                }
+            },
+            error: function (){
+                $('#runinfo').html('');
+                $('#runinfo').append('<p>提交有故障!~</p>');
+            }
+        })
+    }
+
+</script>
+{% endblock  %}
+
+{% block pagecontent %}
+<div class="card">
+<form id="form" name="form" method="post" class="form-horizontal">
+    {% csrf_token %}
+<div class="card-body">
+    <div class="form-group row">
+        <label class="col-sm-2 col-form-label">{{ form.version.label }}</label>
+         <div class="col-sm-10">
+             <select id="id_version" name="version" class="form-control select2 validate[required]"
+                     data-errormessage-value-missing="请选择要安装的版本">
+             <option value="">请选择...</option>
+    {% for py in pylist %}
+    <option value="{{ py }}">{{ py }}</option>
+    {% endfor %}
+             </select>
+         </div>
+    </div>
+
+{#    <div class="form-group row">#}
+{#        <label class="col-sm-2 col-form-label">{{ form.website.label }}</label>#}
+{#        <div class="col-sm-10">{{ form.website }}</div>#}
+{#    </div>#}
+    <div id="runinfo">
+<button type="button" class="btn btn-info ml-2" id="btn_run" onclick="runsetup();">开始编译安装（需要时间很长，请勿刷新）</button>
+    </div>
+</div>
+    <div class="card-footer" id="card-footer"> </div>
+</form>
+</div>
+<div style="overflow:auto;width:100%;height:300px;background:#000000;color:#FFFFFF;padding:5px;" id="showprocess">
+
+</div>
+{% endblock %}

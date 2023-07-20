@@ -1,0 +1,39 @@
+{% extends 'layout/layout_main.html' %}
+{% load frame_helper %}
+{% load frame_get %}
+
+{% block pagecontent %}
+<div class="row">
+    <div class="card">
+        <div class="card-body">
+                <div class="row">
+                    <dt class="col-sm-3">主机名</dt>
+                    <dd class="col-sm-9"><a href="{% url 'site_home:hostname' %}">{% get_hostname %}</a></dd>
+                    <dt class="col-sm-3">操作系统</dt>
+                    <dd class="col-sm-9">{{ os }}</dd>
+                    <dt class="col-sm-3">系统时间</dt>
+                    <dd class="col-sm-9">{{ current_time }}</dd>
+                    <dt class="col-sm-3">内核架构</dt>
+                    <dd class="col-sm-9">{{ platform }} 运行于 {{ machine }}</dd>
+                    <dt class="col-sm-3">CPU</dt>
+                    <dd class="col-sm-9">{{ cpu }}, {{ cpu_count }}核</dd>
+
+                    <dt class="col-sm-3">电源操作</dt>
+                    <dd class="col-sm-9">
+                        <div class="col-sm-6">
+                            <div class="input-group-prepend">
+                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                              选择操作
+                            </button>
+                            <div class="dropdown-menu" style="">
+                              <a class="dropdown-item" href="{% url 'site_home:shutdown' 'r' %}">重启</a>
+                              <a class="dropdown-item" href="{% url 'site_home:shutdown' 'h' %}">关机</a>
+                            </div>
+                          </div>
+                        </div>
+                    </dd>
+                </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

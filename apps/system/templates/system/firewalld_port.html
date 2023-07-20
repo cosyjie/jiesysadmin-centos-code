@@ -1,0 +1,98 @@
+{% extends 'layout/layout_main.html' %}
+{% load frame_html %}
+{% load frame_plugins %}
+
+{% block css_files %}
+    {% jquery_confirm 'css' %}
+    {% toastr 'css' %}
+{% endblock %}
+{% block js_files %}
+    {% jquery_confirm 'js' %}
+    {% toastr 'js' %}
+{% endblock %}
+{% block js_code %}
+<script type="text/javascript">
+{% if messages %}
+toastr.success("{% for message in messages %}{{ message }}{% endfor %}", '操作提示');
+{% endif %}
+$(function(){
+    $('.btn_del').on('click', function(){
+        let formName = $(this).closest("form").attr("name");
+        $.confirm({
+            title: '确认!',
+            content: '确认要删除当前端口吗？',
+            buttons: {
+                confirm: {
+                    text: '确认',
+                    action: function (){
+                        $('#' + formName).submit();
+                    }
+                },
+                cancel:{
+                    text: '取消',
+                },
+            }
+        });
+    });
+})
+</script>
+{% endblock %}
+
+{% block pagecontent %}
+<div class="row">
+{% include 'system/firewalld_zones_list.html' %}
+<div class="col-md-10">
+    <div class="card card-gray card-tabs">
+        <div class="card-header p-0 pt-1">
+            <ul class="nav nav-tabs"  role="tablist">
+  <li class="nav-item">
+      <a class="nav-link active" href="{% url 'system:firewalld:port' %}?zone={{ currentZone }}" >端口</a>
+  </li>
+  <li class="nav-item">
+      <a class="nav-link" href="{% url 'system:firewalld:service' %}?zone={{ currentZone }}" >服务</a>
+  </li>
+</ul>
+
+          </div>
+        <div class="card-body">
+<a class="btn btn-outline-success margin_right_10" href="{% url 'system:firewalld:reload' %}?from=port&zone={{ currentZone }}">
+    <i class="fa fa-sync"></i> 重载防火墙规则
+</a>
+<a class="btn btn-outline-success margin_right_10" href="{% url 'system:firewalld:port_add' %}?zone={{ currentZone }}">
+    <i class="fa fa-plus"></i> 添加端口
+</a>
+            <table class="table table-bordered table-hover table-sm mt-2">
+                  <thead class="thead-light">
+                    <tr>
+                      <th>端口号</th>
+                      <th>协议</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                  {% for port in ports %}
+                    <tr>
+                      <td>{{ port.port }}</td>
+                      <td>{{ port.protocol }}</td>
+                      <td>
+        {% if port.port == '8000' and port.protocol == 'tcp' %}-{% else %}
+            <form id="form_port_{{ current_zone }}_{{ port.port }}" name="form_port_{{ current_zone }}_{{ port.port }}" action="{% url 'system:firewalld:port_del' %}"
+                  method="post">
+            {% csrf_token %}
+                <input type="hidden" id="id_zone" name="zone" value="{{ currentZone }}" />
+                <input type="hidden" id="'id_port" name="port" value="{{ port.port }}" />
+                <input type="hidden" id="'id_protocol" name="protocol" value="{{ port.protocol }}" />
+                <button type="button" class="btn btn-link btn-xs text-danger btn_del">删除</button>
+            </form>
+        {% endif %}
+                      </td>
+                    </tr>
+                  {% endfor %}
+                  </tbody>
+                </table>
+        </div>
+    </div>
+
+</div>
+</div>
+{% endblock %}

@@ -1,0 +1,112 @@
+{% extends 'layout/layout_main.html' %}
+{% load frame_html %}
+{% load frame_plugins %}
+{% load frame_helper %}
+
+{% block css_files %}
+    {% toastr 'css' %}
+{% endblock %}
+{% block js_files %}
+    {% toastr 'js' %}
+{% endblock %}
+{% block js_code %}
+<script type="text/javascript">
+{% if messages %}
+{% for message in messages %}toastr.{{ message.tags }}("{{ message }}", '操作提示');{% endfor %}
+{% endif %}
+</script>
+{% endblock %}
+
+
+{% block pagecontent %}
+<div class="card card-gray">
+    <div class="card-header">
+        <h3 class="card-title">
+            {{ devicename }}
+            <span class="ml-3">{{ deviceinfo.venddr }}{{ deviceinfo.product }}</span>
+        </h3>
+    </div>
+    <div class="card-body">
+        <dl class="row mt-2">
+          <dt class="col-sm-1">设备名</dt>
+          <dd class="col-sm-11">{{ devicename }}</dd>
+          <dt class="col-sm-1">类型</dt>
+          <dd class="col-sm-11">{{ deviceinfo.type }}</dd>
+          <dt class="col-sm-1">设备型号</dt>
+          <dd class="col-sm-11">{{ deviceinfo.venddr }}{{ deviceinfo.product }}</dd>
+          <dt class="col-sm-1">链路速度</dt>
+          <dd class="col-sm-11">{{ deviceinfo.capspeed }}</dd>
+          <dt class="col-sm-1">硬件MAC</dt>
+            <dd class="col-sm-11"><a href="">{{ deviceinfo.hwaddr }}</a></dd>
+          <dt class="col-sm-1">MTU</dt>
+          <dd class="col-sm-11"><a href="">{{ deviceinfo.mtu }}</a></dd>
+          <dt class="col-sm-1">自动连接</dt>
+          <dd class="col-sm-11">{{ deviceinfo.autoconnect }}</dd>
+        </dl>
+    </div>
+</div>
+    <div class="row">
+  <div class="col-12">
+      <a href="{% url 'system:network:conn_add' devicename %}" class="btn btn-outline-success float-right">
+          <i class="fa fa-plus"></i> 新建配置
+      </a>
+  </div>
+    </div>
+<div class="row mt-2">
+{% for k,v in connlist.items %}
+    {% if v.type == deviceinfo.type %}
+    {% if v.macaddress ==  deviceinfo.hwaddr or v.macaddress == '--'  %}
+<div class="col-md-6">
+    <div class="card{% if k == deviceinfo.conuuid %} card-outline card-orange{% endif %}">
+    {% if k ==  deviceinfo.conuuid %}
+        <div class="card-header">
+            <div class="card-title"><i class="far fa-check-square"></i> {{ v.name }}</div>
+        </div>
+        {% endif %}
+        <div class="card-body">
+   <div class="row">
+       <div class="col-12">
+           {% if v.state != 'activated' %}
+           <a href="{% url 'system:network:conn_action' 'up' k devicename %}" class="btn btn-default float-right">激活</a>
+           <a href="{% url 'system:network:conn_action' 'delete' k devicename %}" class="btn btn-default float-right">删除</a>
+           {% endif %}
+       </div>
+   </div>
+            <dl class="row">
+              <dt class="col-sm-2">配置名称</dt>
+              <dd class="col-sm-10"><a href="">{{ v.name }}</a> </dd>
+              <dt class="col-sm-2">类型</dt>
+              <dd class="col-sm-10">{{ v.type }}</dd>
+              <dt class="col-sm-2">自动连接</dt>
+              <dd class="col-sm-10">{{ v.autoconnect }}</dd>
+              <dt class="col-sm-2">状态</dt>
+              <dd class="col-sm-10">{{ v.state|default:"-" }}</dd>
+              <dt class="col-sm-2">IPv4配置</dt>
+              <dd class="col-sm-10">{{ v.ipv4method_cn }}</dd>
+              <dt class="col-sm-2">IPV4地址</dt>
+              <dd class="col-sm-10">
+                  {% if v.ipv4method == 'auto' %}{{ v.ipv4address|join:"<br/>" }}{% endif %}
+                {% if v.ipv4method == 'manual' %}{{ v.ipv4addr }}{% endif %}
+              </dd>
+              <dt class="col-sm-2">IPV6配置</dt>
+              <dd class="col-sm-10">{{ v.ipv6method_cn }}</dd>
+              <dt class="col-sm-2">默认路由</dt>
+              <dd class="col-sm-10">{{ v.ipv4geway|default:'-' }}</dd>
+              <dt class="col-sm-2">DNS</dt>
+              <dd class="col-sm-10">
+                  {% if v.ipv4method == 'auto' %}{{ v.ipv4dns|join:"<br/>" }}{% endif %}
+                {% if v.ipv4method == 'manual' %}{{ v.ipv4dnsm }}{% endif %}
+
+               </dd>
+              <dt class="col-sm-2">配置文件</dt>
+              <dd class="col-sm-10">{{ v.filename }}</dd>
+            </dl>
+          </div>
+    </div>
+</div>
+        {% endif %}
+{% endif %}
+
+{% endfor %}
+    </div>
+{% endblock %}

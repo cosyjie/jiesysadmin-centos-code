@@ -1,0 +1,33 @@
+{% extends 'layout/layout_main.html' %}
+{% load frame_html %}
+{% load frame_plugins %}
+{% load frame_helper %}
+
+{% block pagecontent %}
+<div class="card card-gray">
+  <div class="card-body p-0 table-responsive">
+<table class="table table-bordered table-hover table-sm">
+  <thead class="thead-light">
+    <tr>
+      <th>设备名称</th>
+      <th>硬件</th>
+      <th>类型</th>
+      <th>ipv4</th>
+      <th>状态</th>
+    </tr>
+  </thead>
+  <tbody>
+{% for k,value in devices.items %}
+    <tr>
+        <td><a href="{% url 'system:network:device_detail' k %}"><b>{{ k }}</b></a></td>
+        <td>{% if value.capissoftware == '否'  %}物理{% else %}虚拟{% endif %}</td>
+        <td>{{ value.type }}</td>
+        <td>{{ value.ipv4address|join:", "|default:"-"}}</td>
+        <td>{{ value.sate|default:"-" }}</td>
+    </tr>
+{% endfor %}
+  </tbody>
+</table>
+  </div>
+</div>
+{% endblock %}

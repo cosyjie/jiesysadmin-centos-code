@@ -1,0 +1,84 @@
+{% extends 'layout/layout_main.html' %}
+{% load static %}
+{% load frame_plugins %}
+
+{% block css_files %}
+    {% codemirror 'css' %}
+    {% jquery_validation_engine 'css' %}
+{% endblock %}
+
+{% block js_files %}
+    {% codemirror 'js' %}
+    {% jquery_validation_engine 'js' %}
+{% endblock %}
+
+{% block js_code %}
+<script>
+ {% jquery_validation_engine 'jscode' form_id='form' %}
+
+CodeMirror.modeURL = "{% static 'plugins/codemirror/mode' %}/%N/%N.js";
+var editor = CodeMirror.fromTextArea(document.getElementById("id_filecontent"), {
+    lineNumbers: true,
+    theme: 'monokai',
+});
+var modeInput = "{{ filename }}";
+  var val = modeInput, m, mode, spec;
+  if (m = /.+\.([^.]+)$/.exec(val)) {
+    var info = CodeMirror.findModeByExtension(m[1]);
+    if (info) {
+      mode = info.mode;
+      spec = info.mime;
+    }
+  } else if (/\//.test(val)) {
+    var info = CodeMirror.findModeByMIME(val);
+    if (info) {
+      mode = info.mode;
+      spec = val;
+    }
+  } else {
+    mode = spec = val;
+  }
+  if (mode) {
+    editor.setOption("mode", mode);
+    CodeMirror.autoLoadMode(editor, mode);
+  } else {
+    console.log("Could not find a mode corresponding to " + val);
+  }
+
+</script>
+{% endblock %}
+
+{% block pagecontent %}
+<div class="col-md-12">
+{% if check %}
+<form id="form" name="form" method="post">{% csrf_token %}
+      <div class="card card-outline card-info">
+        <div class="card-header">
+          <h3 class="card-title">
+            <i class="fas fa-edit"></i> {{ path }}{{ form.filename }}
+          </h3>
+            <div class="card-tools">
+                <button type="submit" class="btn btn-tool"><i class="fa fa-save"></i></button>
+                <button type="button" class="btn btn-tool" data-card-widget="maximize">
+                    <i class="fas fa-expand"></i>
+                  </button>
+                <button type="button" class="btn btn-tool">
+                   <a href="{% url 'system:sysfiles:list' %}?path={{ path }}"><i class="fas fa-times"></i></a>
+                  </button>
+            </div>
+        </div>
+     {{ form.path }}
+    <div class="card-body p-0">
+        {{ form.filecontent }}
+    </div>
+      </div>
+</form>
+{% else %}
+<div class="alert alert-warning alert-dismissible">
+  <a href="{% url 'system:sysfiles:list' %}?path={{ path }}" class="close" >×</a>
+<h5><i class="icon fas fa-exclamation-triangle"></i> 文件类型不支持在线编辑!</h5>
+</div>
+
+{% endif %}
+</div>
+{% endblock %}

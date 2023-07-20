@@ -1,0 +1,15 @@
+{% extends 'layout/layout_html.html' %}
+{% load frame_helper %}
+
+{% block layout %}
+<body class="hold-transition login-page text-sm">
+<div class="login-box">
+  <div class="login-logo"><b>{% get_settings 'site_verbose_name'  %}</b></div>
+  <div class="card">
+    <div class="card-body login-card-body">
+    {% block pagecontent %}{% endblock pagecontent %}
+    </div>
+  </div>
+</div>
+</body>
+{% endblock %}

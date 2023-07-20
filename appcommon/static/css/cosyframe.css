@@ -1,0 +1,15 @@
+.margin_right_5{ margin-right: 5px;}
+.margin_right_10{ margin-right: 10px;}
+.login-card-body .errorlist {padding:0px; margin: 0px;}
+.login-card-body .errorlist li {
+    list-style: none;
+}
+
+.formError .formErrorContent{
+    font-size: 0.9rem;
+}
+
+.CodeMirror {
+  border: 1px solid #eee;
+  height: 500px;
+}

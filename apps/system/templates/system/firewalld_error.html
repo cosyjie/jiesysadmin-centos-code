@@ -1,0 +1,12 @@
+{% extends 'layout/layout_main.html' %}
+{% load frame_html %}
+
+{% block pagecontent %}
+<div class="card card-warning">
+<div class="card-title">错误</div>
+<div class="card-body">
+    {% for error in error %}{{ error }}{% endfor %}
+</div>
+<div class="card-footer">{% form_btn 'back' %}</div>
+</div>
+{% endblock %}

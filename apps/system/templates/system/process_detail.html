@@ -1,0 +1,58 @@
+{% extends 'layout/layout_main.html' %}
+{% load frame_helper %}
+{% load frame_html %}
+
+{% block pagecontent %}
+{% if process %}
+<div class="card">
+    <div class="card-body">
+
+        <dl class="row">
+          <dt class="col-sm-1">进程标识</dt>
+          <dd class="col-sm-11">{{ process.pid }}</dd>
+          <dt class="col-sm-1">名称</dt>
+          <dd class="col-sm-11">{{ process.name }}</dd>
+          <dt class="col-sm-1">命令</dt>
+          <dd class="col-sm-11">{{ process.cmdline|join:"  " }}</dd>
+          <dt class="col-sm-1">用户</dt>
+          <dd class="col-sm-11">{{ process.username }}</dd>
+          <dt class="col-sm-1">父进程</dt>
+          <dd class="col-sm-11">
+              {% if process.parent.pid %}
+              <a href="{% url 'system:process:detail' 'all' process.parent.pid %}">{{ process.parent.name }}</a>
+              {% else %}-{% endif %}
+          </dd>
+          <dt class="col-sm-1">CPU</dt>
+          <dd class="col-sm-11">{{ process.cpu_percent }}%</dd>
+          <dt class="col-sm-1">创建时间</dt>
+          <dd class="col-sm-11">{{ process.create_time }}</dd>
+          <dt class="col-sm-1">tty</dt>
+          <dd class="col-sm-11">{{ process.tty }}</dd>
+          <dt class="col-sm-1">常规文件</dt>
+          <dd class="col-sm-11">{{ process.files|join:"</br>" }}</dd>
+          <dt class="col-sm-1">状态</dt>
+          <dd class="col-sm-11">{{ process.status }}</dd>
+          <dt class="col-sm-1">内存</dt>
+          <dd class="col-sm-11">
+              物理：{{ process.memory.rss|filesizeformat }}<br/>
+              虚拟：{{ process.memory.vms|filesizeformat }}<br/>
+              共享：{{ process.memory.shared|filesizeformat }}<br/>
+          </dd>
+        </dl>
+
+    </div>
+    <div class="card-footer">
+        {% if process.status == 'stopped' %}
+            <a href="{% url 'system:process:action' listtype 'resume' process.pid %}" class="btn btn-info">恢复进程</a>
+        {% else %}
+            <a href="{% url 'system:process:action' listtype 'pause' process.pid %}" class="btn btn-warning">暂停进程</a>
+        {% endif %}
+            <a href="{% url 'system:process:action' listtype 'kill' process.pid %}" class="btn btn-danger">关闭进程</a>
+    </div>
+</div>
+{% else %}
+<div class="callout callout-warning">
+  <h5>此标识的进程已经没有运行！</h5>
+</div>
+{% endif %}
+{% endblock %}

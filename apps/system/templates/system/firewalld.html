@@ -1,0 +1,46 @@
+{% extends 'layout/layout_main.html' %}
+{% load frame_html %}
+
+{% block pagecontent %}
+<div class="card">
+    <div class="card-body">
+        <dl class="row">
+          <dt class="col-sm-1">服务名</dt>
+          <dd class="col-sm-11">{{ service }}</dd>
+          <dt class="col-sm-1">路径</dt>
+          <dd class="col-sm-11">{{ loaded }}</dd>
+          <dt class="col-sm-1">状态</dt>
+          <dd class="col-sm-11">
+              {% if statue_str == 'no' %}<span class="text-danger">停止</span>{% endif %}
+              {% if statue_str == 'yes' %}<span class="text-success">运行</span>{% endif %}
+                <button type="button" class="btn btn-default dropdown-toggle ml-2" data-toggle="dropdown" aria-expanded="false">
+                  选择操作
+                </button>
+                <div class="dropdown-menu" >
+                    {% if statue_str == 'no' %}<a href="{% url 'system:firewalld:action' %}?action=start" class="dropdown-item">启动</a>{% endif %}
+                    {% if statue_str == 'yes' %}<a href="{% url 'system:firewalld:action' %}?action=stop" class="dropdown-item">停止</a>{% endif %}
+                    <a href="{% url 'system:firewalld:action' %}?action=restart" class="dropdown-item">重启</a>
+                    <a href="{% url 'system:firewalld:action' %}?action=reload" class="dropdown-item">重载</a>
+                </div>
+          </dd>
+          <dt class="col-sm-1">开机启动</dt>
+          <dd class="col-sm-11">
+              {% if boot == 'enabled' %}<span class="text-success">启用</span>{% endif %}
+              {% if boot == 'disabled' %}<span class="text-danger">禁用</span>{% endif %}
+                <button type="button" class="btn btn-default dropdown-toggle ml-2" data-toggle="dropdown" aria-expanded="false">
+                  选择操作
+                </button>
+                <div class="dropdown-menu" >
+                {% if boot == 'enabled' %}<a href="{% url 'system:firewalld:action' %}?action=disabled" class="dropdown-item">禁用</a>{% endif %}
+                {% if boot == 'disabled' %}<a href="{% url 'system:firewalld:action' %}?action=enabled" class="dropdown-item">启用</a>{% endif %}
+                </div>
+          </dd>
+        </dl>
+
+{% if statue_str == 'yes' %}
+    <a href="{% url 'system:firewalld:port' %}" class="btn btn-success">防火墙配置</a>
+{% endif %}
+
+    </div>
+</div>
+{% endblock %}

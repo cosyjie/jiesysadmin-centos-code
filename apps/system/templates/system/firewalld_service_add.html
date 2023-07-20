@@ -1,0 +1,61 @@
+{% extends 'layout/layout_main.html' %}
+{% load frame_html %}
+{% load frame_plugins %}
+
+{% block css_files %}
+    {% jquery_validation_engine 'css' %}
+    {% select2 'css' %}
+{% endblock %}
+{% block js_files %}
+    {% jquery_validation_engine 'js' %}
+    {% select2 'js' %}
+{% endblock %}
+
+{% block js_code %}
+<script type="text/javascript">
+$(document).ready(function(){
+    {% select2 'jscode' %}
+    {% jquery_validation_engine 'jscode' form_id='form' %}
+})
+</script>
+{% endblock  %}
+
+{% block pagecontent %}
+    {% if messages %}
+<div class="alert alert-warning alert-dismissible">
+<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+<h5><i class="icon fas fa-exclamation-triangle"></i>执行错误</h5>
+    {% for message in messages %}{{ message }}{% endfor %}
+</div>
+    {% endif %}
+
+<div class="card">
+    <form id="form" name="form" method="post" class="form-horizontal">
+        {% csrf_token %}{{ form.zone }}
+        <div class="card-body">
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label">区域</label>
+                <div class="col-sm-10">{{ form.zone.value }}</div>
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label">服务</label>
+                <div class="col-sm-10">
+<select class="select2 validate[required]" name="service" id="id_service" data-errormessage-value-missing="请选择要添加的服务">
+    <option value="">请选择服务...</option>
+    {% for key, value in services.items %}
+        <option value="{{ key }}">
+            {{ value.short }}
+            （TCP:{{ value.tcp|join:", " }}   UDP:{{ vlaue.udp|join:", " }}）
+        </option>
+    {% endfor %}
+</select>
+                </div>
+            </div>
+
+        </div>
+        <div class="card-footer">
+            <button type="submit" class="btn bg-success">添加服务</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

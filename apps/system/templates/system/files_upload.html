@@ -1,0 +1,24 @@
+{% extends 'layout/layout_main.html' %}
+{% load static %}
+{% load frame_html %}
+
+{% block pagecontent %}
+<form id="form" name="form" method="post" enctype="multipart/form-data">{% csrf_token %}
+      <div class="card">
+          <div class="card-header">
+              {{ form.path.label }}{{ form.path }}
+    {% if form.path.errors %}
+          <span class="text-danger">{% for error in form.path.errors %}{{ error }}{% endfor %}</span>
+    {% endif %}
+          </div>
+    <div class="card-body">
+        {{ form.fileupload }}
+{% if form.fileupload.errors %}
+      <span class="text-danger">{% for error in form.fileupload.errors %}{{ error }}{% endfor %}</span>
+{% endif %}
+    </div>
+          <div class="card-footer">{% form_btn 'submit' %}</div>
+      </div>
+</form>
+{% endblock %}
+

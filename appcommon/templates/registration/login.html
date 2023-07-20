@@ -1,0 +1,67 @@
+{% extends 'layout/layout_login.html' %}
+{% load frame_helper %}
+{% load frame_plugins %}
+{% block page_title %}登录{% endblock %}
+
+{% block css_files %}
+{% jquery_validation_engine 'css' %}
+{% endblock %}
+
+{% block js_files %}
+{% jquery_validation_engine 'js' %}
+{% endblock %}
+{% block js_code %}
+<script type="text/javascript">
+$(function () {
+    {% jquery_validation_engine 'jscode' form_id='form' %}
+});
+</script>
+{% endblock  %}
+
+{% block pagecontent %}
+<p class="login-box-msg">请输入您的登录信息</p>
+{% if form.non_field_errors %}
+<div class="alert alert-danger">{{form.non_field_errors }}</div>
+{% elif next and not request.user.is_authenticated%}
+<div class="alert alert-danger" role="alert">
+    您还未登录或者您的登录超时！若要继续，请使用具有访问权限的帐户登录。
+</div>
+{% endif %}
+{{ form.subject.errors }}
+<form id="form"  method="post">{% csrf_token %}
+  <div class="input-group mb-3">
+    {{ form.username }}
+    <div class="input-group-append">
+      <div class="input-group-text">
+        <span class="fas fa-envelope"></span>
+      </div>
+    </div>
+  </div>
+  {% if form.username.errors %}<span class="form_error">{{ form.username.errors }}</span>{% endif %}
+  <div class="input-group mb-3">
+    {{ form.password }}
+    <div class="input-group-append">
+      <div class="input-group-text">
+        <span class="fas fa-lock"></span>
+      </div>
+    </div>
+  </div>
+  {% if form.password.errors %}<span class="form_error">{{ form.password.errors }}</span>{% endif %}
+  <div class="row mb-3">
+    <div class="col-8"></div>
+    <div class="col-4">
+      <button type="submit" id="form_btn" class="btn btn-primary btn-block">登录</button>
+    </div>
+  </div>
+</form>
+
+<div class="social-auth-links text-center mb-3">
+  <hr/>
+</div>
+{% if email == True %}
+<p class="mb-1">
+  <a href="{% url 'password_reset' %}">忘记密码</a>
+</p>
+{% endif %}
+
+{% endblock pagecontent %}

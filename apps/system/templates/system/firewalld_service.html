@@ -1,0 +1,101 @@
+{% extends 'layout/layout_main.html' %}
+{% load frame_html %}
+{% load frame_plugins %}
+
+{% block css_files %}
+    {% jquery_confirm 'css' %}
+    {% toastr 'css' %}
+{% endblock %}
+{% block js_files %}
+    {% jquery_confirm 'js' %}
+    {% toastr 'js' %}
+{% endblock %}
+{% block js_code %}
+<script type="text/javascript">
+{% if messages %}
+{% for message in messages %}toastr.{{ message.tags }}("{{ message }}", '操作提示');{% endfor %}
+{% endif %}
+$(function(){
+    $('.btn_del').on('click', function(){
+        let formName = $(this).closest("form").attr("name");
+        $.confirm({
+            title: '确认!',
+            content: '确认要删除当前服务吗？',
+            buttons: {
+                confirm: {
+                    text: '确认',
+                    action: function (){
+                        $('#' + formName).submit();
+                    }
+                },
+                cancel:{
+                    text: '取消',
+                },
+            }
+        });
+    });
+})
+</script>
+{% endblock %}
+
+{% block pagecontent %}
+<div class="row">
+{% include 'system/firewalld_zones_list.html' %}
+<div class="col-md-10">
+    <div class="card card-gray card-tabs">
+        <div class="card-header p-0 pt-1">
+            <ul class="nav nav-tabs"  role="tablist">
+  <li class="nav-item">
+      <a class="nav-link" href="{% url 'system:firewalld:port' %}?zone={{ currentZone }}" >端口</a>
+  </li>
+  <li class="nav-item">
+      <a class="nav-link active" href="{% url 'system:firewalld:service' %}?zone={{ currentZone }}" >服务</a>
+  </li>
+            </ul>
+        </div>
+        <div class="card-body">
+<a class="btn btn-outline-success margin_right_10" href="{% url 'system:firewalld:reload' %}?from=service&zone={{ currentZone }}">
+    <i class="fa fa-sync"></i> 重载防火墙规则
+</a>
+<a class="btn btn-outline-success margin_right_10" href="{% url 'system:firewalld:service_add' %}?zone={{ currentZone }}">
+    <i class="fa fa-plus"></i> 添加服务
+</a>
+
+            <table class="table table-bordered table-hover table-sm mt-2">
+                  <thead class="thead-light">
+                    <tr>
+                      <th>服务名</th>
+                      <th>名称</th>
+                      <th>TCP</th>
+                      <th>UDP</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                  {% for service in services %}
+                    <tr>
+                      <td>{{ service.name }}</td>
+                      <td>{{ service.short }}</td>
+                      <td>{{ service.tcp }}</td>
+                      <td>{{ service.udp }}</td>
+                      <td>
+            <form name="form_service_{{ current_zone }}_{{ service.name }}"
+                  id="form_service_{{ current_zone }}_{{ service.name }}"
+                  action="{% url 'system:firewalld:service_del' %}?zone={{ currentZone }}" method="post">
+            {% csrf_token %}
+                <input type="hidden" id="id_zone" name="zone" value="{{ currentZone }}" />
+                <input type="hidden" id="'id_service" name="service" value="{{ service.name }}" />
+                <button type="button" class="btn btn-link btn-xs text-danger btn_del">删除</button>
+            </form>
+                      </td>
+                    </tr>
+                  {% endfor %}
+                  </tbody>
+                </table>
+        </div>
+    </div>
+
+</div>
+</div>
+    </div>
+{% endblock %}

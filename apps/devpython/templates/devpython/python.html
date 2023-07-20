@@ -1,0 +1,79 @@
+{% extends 'layout/layout_main.html' %}
+{% load frame_html %}
+{% load frame_plugins %}
+
+{% block css_files %}
+    {% jquery_confirm 'css' %}
+    {% toastr 'css' %}
+{% endblock %}
+{% block js_files %}
+    {% jquery_confirm 'js' %}
+    {% toastr 'js' %}
+{% endblock %}
+{% block js_code %}
+<script type="text/javascript">
+{% if messages %}
+toastr.success("{% for message in messages %}{{ message }}{% endfor %}", '操作提示');
+{% endif %}
+$(function(){
+    $('a.btn_del').confirm({
+        title: '确认!',
+            content: '确认要卸载当前 Python 版本吗？(除非版本有问题，否则不建议卸载)',
+            buttons: {
+                confirm: {
+                    text: '确认',
+                    action: function (){
+                       location.href = this.$target.attr('href');
+                    }
+                },
+        cancel:{
+            text: '取消',
+        },
+        }
+    });
+
+})
+</script>
+{% endblock %}
+
+{% block pagecontent %}
+<div class="row">
+    <div class="col-12">
+        <a href="{% url 'devpython:install' %}" class="btn btn-outline-success mb-2 float-right">安装其他版本</a>
+    </div>
+</div>
+{{ current }}
+
+<div class="card card-gray">
+    <div class="card-header">
+        <h3 class="card-title">已安装的 Python 版本</h3>
+    </div>
+    <div class="card-body">
+        <table class="table table-bordered table-hover table-sm">
+            <thead class="thead-light">
+            <tr><th>版本名称</th><th>类型</th><th>来源版本</th><th></th></tr>
+            </thead>
+            <tbody>
+{% for py, envs in pylist.items %}
+            <tr>
+                <td>{{ py }}</td><td>基础</td><td></td>
+                <td>
+            {% if not envs %}
+                <a href="{% url 'devpython:del' py %}" class="btn btn-link btn-xs text-danger btn_del">删除</a>
+            {% endif %}
+                </td>
+            </tr>
+    {% for env in envs %}
+            <tr>
+                <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ env }}</td>
+                <td>虚拟</td>
+                <td>{{ py }}</td>
+                <td></td>
+            </tr>
+    {% endfor %}
+{% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

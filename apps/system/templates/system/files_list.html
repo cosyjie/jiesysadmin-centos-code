@@ -1,0 +1,158 @@
+{% extends 'layout/layout_main.html' %}
+{% load frame_plugins %}
+
+{% block css_files %}
+    {% jquery_confirm 'css' %}
+    {% toastr 'css' %}
+{% endblock %}
+{% block js_files %}
+    {% jquery_confirm 'js' %}
+    {% toastr 'js' %}
+{% endblock %}
+
+{% block js_code %}
+<script type="text/javascript">
+{% if messages %}
+{% for message in messages %}toastr.{{ message.tags }}("{{ message }}", '操作提示');{% endfor %}
+{% endif %}
+$(function(){
+    $('a.btn_del').confirm({
+        title: '确认!',
+            content: '确认要删除吗？(谨慎：若删除目录将会循环删除目录下的文件)',
+            buttons: {
+                confirm: {
+                    text: '确认',
+                    action: function (){
+                       location.href = this.$target.attr('href');
+                    }
+                },
+        cancel:{
+            text: '取消',
+        },
+        }
+    });
+
+})
+
+</script>
+{% endblock %}
+
+{% block pagecontent %}
+<div class="card">
+    <div class="card-header">
+        <div class="card-title col-md-6">
+            <form id="form" name="form" class="form" method="get">
+                <div class="input-group input-group-sm ">
+                      <input id="path" name="path" type="text" class="form-control" value="{{ path }}">
+                      <span class="input-group-append">
+                        <button type="submit" class="btn btn-info btn-flat">
+                            <i class="fas fa-arrow-right"></i>
+                        </button>
+                      </span>
+                </div>
+            </form>
+        </div>
+        <div class="card-tools mr-5">
+  <div class="btn-group" role="group">
+    <button id="btnGroupDrop1" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+      文件
+    </button>
+    <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+        <a class="dropdown-item" href="{% url 'system:sysfiles:edit' %}?path={{ path }}&filename=">新建文件</a>
+        <a class="dropdown-item" href="{% url 'system:sysfiles:upload' %}?path={{ path }}">上传文件</a>
+        <a class="dropdown-item" href="{% url 'system:sysfiles:download' %}?path={{ path }}">远程下载到目录</a>
+    </div>
+  </div>
+<div class="btn-group" role="group">
+    <button id="btnGroupDrop1" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+      目录
+    </button>
+    <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+      <a class="dropdown-item" href="{% url 'system:sysfiles:dir' 'create' %}?path={{ path }}">新建目录</a>
+    </div>
+  </div>
+        </div>
+    </div>
+    <div class="card-body table-responsive p-0" style="height:500px;">
+    <table class="table table-head-fixed text-nowrap table-hover table-sm">
+      <thead>
+        <tr>
+             <th></th>
+            <th>名称</th>
+            <th>类型</th>
+            <th>用户</th>
+            <th>用户组</th>
+            <th>权限</th>
+            <th>大小</th>
+            <th>修改日期</th>
+
+        </tr>
+      </thead>
+      <tbody>
+      {% if path != '/' %}
+          <tr>
+          <td></td>
+          <td colspan="6">
+   <h6><i class="far fa-folder bg-yellow"></i>
+        <a href="{% url 'system:sysfiles:list' %}?path={{ parentdir }}">..</a>
+    </h6>
+          </td>
+          </tr>
+      {% endif %}
+{% for name, dir in dirlist.items %}
+    {% if dir != '.' %}
+        <tr>
+<td>
+{% if dir != '.' and dir != ".." %}
+{% if dir.type_en == '-' %}
+<div class="btn-group">
+  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">操作
+  </button>
+  <ul class="dropdown-menu" style="">
+    <li><a class="dropdown-item" href="{% url 'system:sysfiles:edit' %}?path={{ path }}&filename={{ name }}" >编辑文件</a></li>
+    <li><a class="dropdown-item btn_del" href="{% url 'system:sysfiles:del' 'file' %}?path={{ path }}&filename={{ name }}">删除文件</a></li>
+</ul>
+</div>
+ {% endif %}
+    {% if dir.type_en == 'd' %}
+<div class="btn-group">
+  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">操作
+  </button>
+  <ul class="dropdown-menu" style="">
+        <li><a class="dropdown-item btn_del" href="{% url 'system:sysfiles:del' 'dir' %}?path={{ path }}&filename={{ name }}">删除目录</a></li>
+</ul>
+</div>
+    {% endif %}
+
+{% endif %}
+        </td>
+          <td>
+{% if dir.type_en == 'd' or dir.type_en == 'ld' %}
+    <h6>
+        {% if dir.type_en == 'ld' %}
+            <i class="fas fa-share-square bg-yellow"></i>
+        {% else %}
+            <i class="far fa-folder bg-yellow"></i>
+        {% endif %}
+        <a href="{% url 'system:sysfiles:list' %}?path={{ path }}{{ name }}/">{{ name }}
+        </a>
+    </h6>
+{% else %}
+    {% if dir.type_en == 'l' %}<i class="fas fa-external-link-alt"></i>{% else %}<i class="far fa-file"></i>{% endif %}
+    &nbsp;&nbsp;{{ name }}
+{% endif %}
+          </td>
+          <td>{{ dir.type_cn }}</td>
+          <td>{{ dir.owner }}</td>
+          <td>{{ dir.group }}</td>
+          <td>{{ dir.auth }}</td>
+          <td>{{ dir.st_size|filesizeformat }}</td>
+          <td>{{ dir.at_time }}</td>
+        </tr>
+    {% endif %}
+{% endfor %}
+      </tbody>
+    </table>
+</div>
+</div>
+{% endblock %}

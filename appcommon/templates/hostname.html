@@ -1,0 +1,36 @@
+{% extends 'layout/layout_main.html' %}
+{% load frame_html %}
+{% load frame_plugins %}
+
+{% block css_files %}
+    {% jquery_validation_engine 'css' %}
+{% endblock %}
+
+{% block js_files %}
+    {% jquery_validation_engine 'js' %}
+{% endblock %}
+
+{% block js_code %}
+<script type="text/javascript">
+$(function(){
+    {% jquery_validation_engine 'jscode' form_id='form' %}
+})
+</script>
+{% endblock %}
+
+
+{% block pagecontent %}
+<div class="card">{% csrf_token %}
+<form name="form" id="form" method="post">{% csrf_token %}
+    <div class="card-body">
+        <div class="form-group">
+            {{ form.hostname.label_tag  }}
+            {{ form.hostname }}
+          </div>
+    </div>
+    <div class="card-footer">
+        {% form_btn 'submit' %}{% form_btn 'reset' %}
+    </div>
+ </form>
+</div>
+{% endblock %}

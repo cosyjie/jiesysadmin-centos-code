@@ -1,0 +1,78 @@
+{% extends 'layout/layout_main.html' %}
+{% load frame_helper %}
+{% load frame_html %}
+
+{% block js_code %}
+<script>
+$(document).ready(function(){
+
+});
+</script>
+{% endblock %}
+
+{% block pagecontent %}
+<div class="row">
+<div class="col-12 col-sm-12">
+    {% if messages %}
+<div class="alert alert-warning alert-dismissible">
+<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+<h5><i class="icon fas fa-exclamation-triangle"></i>执行结果：</h5>
+    {% for message in messages %}{{ message }}{% endfor %}
+</div>
+    {% endif %}
+    <div class="card card-yellow card-outline card-outline-tabs">
+    <div class="card-header p-0 border-bottom-0">
+        <ul class="nav nav-tabs">
+          <li class="nav-item">
+            <a class="nav-link{% if list_type == 'all' %} active{% endif %}" href="{% url 'system:process:list' 'all' %}">所有进程</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link{% if list_type == 'memo' %} active{% endif %}" href="{% url 'system:process:list' 'memo' %}">内存占用 TOP100</a>
+          </li>
+{#          <li class="nav-item">#}
+{#            <a class="nav-link{% if list_type == 'cpu' %} active{% endif %}" href="{% url 'system:process:list' 'cpu' %}">CPU占用 TOP100</a>#}
+{#          </li>#}
+          <li class="nav-item">
+            <a class="nav-link{% if list_type == 'log' %} active{% endif %}" href="{% url 'system:process:list' 'log' %}">使用日志文件的进程</a>
+          </li>
+        </ul>
+    </div>
+    <div class="card-body">
+<table class="table table-bordered table-hover table-sm">
+    <thead class="thead-light">
+    <tr>
+      <th>pid</th>
+      <th>name</th>
+      <th>用户</th>
+       {% if list_type == 'memo' %}
+           <th>内存占用</th>
+           <th>内存占比</th>
+           <th>CPU占比</th>{% endif %}
+      <th>状态</th>
+      <th>命令</th>
+    {% if list_type == 'log' %}<th>日志文件</th>{% endif %}
+    </tr>
+  </thead>
+    <tbody>
+{% for proc in process %}
+    <tr>
+    <td><a href="{% url 'system:process:detail' list_type proc.pid %}">{{ proc.pid }}</a></td>
+        <td>{{ proc.name }}</td>
+        <td>{{ proc.username }}</td>
+        {% if list_type == 'memo' %}
+            <td>{{ proc.memory_info.rss|filesizeformat }}</td>
+            <td>{{ proc.memory_percent|floatformat:"-4" }}%</td>
+            <td>{{ proc.cpu_percent }}%</td>
+        {% endif %}
+        <td>{{ proc.status }}</td>
+        <td>{{ proc.cmdline|join:" " }}</td>
+        {% if list_type == 'log' %}<td>{{ proc.logfiles }}</td>{% endif %}
+{% endfor %}
+    </tr>
+    </tbody>
+</table>
+      </div>
+    </div>
+</div>
+</div>
+{% endblock %}

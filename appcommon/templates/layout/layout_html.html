@@ -1,0 +1,23 @@
+{% load static %}
+{% load frame_helper %}
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ page_title }} - {% get_settings 'SITE_VERBOSE_NAME' %}</title>
+  <link rel="stylesheet" href="{% static 'plugins/fontawesome-free/css/all.min.css' %}">
+  <link rel="stylesheet" href="{% static 'plugins/pace/pace.min.css' %}">
+    {% block css_files %}{% endblock %}
+<link rel="stylesheet" href="{% static 'css/adminlte.min.css' %}">
+<link rel="stylesheet" href="{% static 'css/cosyframe.css' %}">
+{% block css_code %}{% endblock  %}
+</head>
+{% block layout %}{% endblock %}
+</html>
+<script src="{% static 'plugins/jquery/jquery.min.js' %}"></script>
+<script src="{% static 'plugins/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+<script src="{% static 'plugins/pace/pace.min.js' %}"></script>
+{% block js_files %}{% endblock %}
+<script src="{% static 'js/adminlte.min.js' %}"></script>
+{% block js_code %}{% endblock  %}

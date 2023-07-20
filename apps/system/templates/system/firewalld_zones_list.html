@@ -1,0 +1,13 @@
+<div class="col-md-2">
+    <div class="card">
+    <div class="card-header bg-secondary p-2"><h5 class="card-title">防火墙区域</h5></div>
+        <div class="list-group">
+        {% for value in zones %}
+          <a href="?zone={{ value }}" class="list-group-item list-group-item-action{% if value == currentZone %} active{% endif %}">
+              {{ value }}{% if value == defaultZone %}（默认）
+              {% endif %}
+          </a>
+        {% endfor %}
+        </div>
+    </div>
+</div>
