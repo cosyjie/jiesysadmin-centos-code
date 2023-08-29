@@ -1,0 +1,78 @@
+{% extends 'layout/layout_main.html' %}
+{% load frame_html %}
+{% load frame_plugins %}
+
+{% block css_files %}
+    {% jquery_confirm 'css' %}
+    {% toastr 'css' %}
+{% endblock %}
+{% block js_files %}
+    {% jquery_confirm 'js' %}
+    {% toastr 'js' %}
+{% endblock %}
+{% block js_code %}
+<script type="text/javascript">
+{% if messages %}
+toastr.success("{% for message in messages %}{{ message }}{% endfor %}", '操作提示');
+{% endif %}
+$(function(){
+    $('a.btn_del').confirm({
+        title: '确认!',
+            content: '确认要终止此用户会话吗（即踢出用户）？',
+            buttons: {
+                confirm: {
+                    text: '确认',
+                    action: function (){
+                       location.href = this.$target.attr('href');
+                    }
+                },
+        cancel:{
+            text: '取消',
+        },
+        }
+    });
+
+})
+</script>
+{% endblock %}
+
+{% block pagecontent %}
+<div class="card card-gray card-tabs">
+    <div class="card-header p-0 pt-1">
+        <ul class="nav nav-tabs">
+<li class="nav-item">
+<a class="nav-link " href="{% url 'system:usersadmin:list' %}">帐号</a>
+</li>
+<li class="nav-item">
+<a class="nav-link active" href="{% url 'system:usersadmin:who_list' %}">当前登录</a>
+</li>
+        </ul>
+    </div>
+    <div class="card-body">
+        <table class="table table-bordered table-hover table-sm  mt-2">
+          <thead class="thead-light">
+            <tr>
+                <th>用户名</th>
+                <th>TTY</th>
+                <th>登录时间</th>
+                <th>来源地址</th>
+                <th></th>
+            </tr>
+          </thead>
+          <tbody>
+    {% for user in wholist %}
+            <tr>
+                <td>{{ user.user }}</td>
+                <td>{{ user.tty }}</td>
+                <td>{{ user.loginat }}</td>
+                <td>{{ user.loginfrom }}</td>
+                <td>
+<a href="{% url 'system:usersadmin:who_kill' %}?tty={{ user.tty }}" class="btn btn-link btn-xs text-danger btn_del">终止会话</a>
+                </td>
+            </tr>
+    {% endfor%}
+          </tbody>
+        </table>
+</div>
+</div>
+{% endblock %}

@@ -20,6 +20,9 @@ INSTALLED_APPS = [
     'apps.devlanguagemodule',
     'apps.devpython',
     # 'apps.sermodule',
+    # 'apps.projectmodule',
+    # 'apps.projectpython',
+
 
 ]
 

@@ -1,0 +1,59 @@
+{% extends 'layout/layout_main.html' %}
+{% load frame_html %}
+{% load frame_plugins %}
+
+{% block css_files %}
+    {% icheck_bootstrap %}
+{% endblock %}
+
+{% block pagecontent %}
+<div class="card">
+    <div class="card-header bg-light">
+        <h4 class="card-title">{{ current_user }}</h4>
+        <div class="card-tools">
+            {% if current_user != 'root' %}
+             <a href="{% url 'system:usersadmin:del' current_user %}" class="btn btn-danger">删除</a>
+            {% endif %}
+        </div>
+    </div>
+<form id="form" name="form" method="post" class="form-horizontal">{% csrf_token %}
+    <div class="card-body">
+    <div class="form-group row">
+        <label for="{{ form.real_name.id_for_label }}" class="col-sm-1 col-form-label">{{ form.real_name.label }}</label>
+        <div class="col-sm-11">{% if current_user == 'root' %}{{ current_user }}{% else %}{{ form.real_name }}{% endif %}</div>
+    </div>
+
+    <div class="form-group row">
+        <label class="col-sm-1 col-form-label">密码：</label>
+        <div class="col-sm-11">
+            <a href="{% url 'system:usersadmin:pwd' current_user %}" class="btn btn-default">修改密码</a>
+        </div>
+    </div>
+
+    {% if current_user != 'root' %}
+    <div class="form-group row">
+        <label for="{{ form.is_admin.id_for_label }}" class="col-sm-1 col-form-label">{{ form.is_admin.label }}</label>
+        <div class="col-sm-11">
+            <div class="icheck-danger icheck-inline">
+             {{ form.is_admin }}<label for="{{ form.is_admin.id_for_label }}">管理员权限</label>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="form-group row">
+        <label for="{{ form.is_locked.id_for_label }}" class="col-sm-1 col-form-label">{{ form.is_locked.label }}</label>
+        <div class="col-sm-11">
+            <div class="icheck-danger icheck-inline">
+             {{ form.is_locked }}<label for="{{ form.is_locked.id_for_label }}"></label>
+            </div>
+        </div>
+    </div>
+
+    </div>
+    <div class="card-footer">
+        {% form_btn 'submit' %}
+    </div>
+</form>
+</div>
+{% endblock %}

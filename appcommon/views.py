@@ -35,8 +35,10 @@ class SiteHomeView(TemplateView):
         context = super().get_context_data(**kwargs)
         context['parent_menu'] = 'home'
         context['page_title'] = '系统仪表板'
-        context['os'] = platform.freedesktop_os_release()['PRETTY_NAME']
-        context['current_time'] = datetime.datetime.now()
+        context['os'] = subprocess.run('cat /etc/redhat-release', shell=True, capture_output=True,
+                                       encoding='utf-8').stdout.strip()
+        context['current_time'] = subprocess.run('date', shell=True, capture_output=True,
+                                                 encoding='utf-8').stdout.strip()
         context['platform'] = platform.platform()
         context['machine'] = platform.machine()
         context['cpu'] = subprocess.run(['cat', '/proc/cpuinfo'], stdout=subprocess.PIPE, encoding="utf-8")\
@@ -61,13 +63,12 @@ class Shutdown(FormView):
             context['page_title'] = '重启'
             context['help_text'] = '<h5>注意</h5>' \
                                    '<p>提交后将执行重新启动系统。当前所有登录用户将被中断连接，所有服务将被重新启动。</p>' \
-                                   '<p>重启后请刷新页面重新访问！</p>' \
-                                   '<p>将使用 shutdown -r 命令重启</p>'
+                                   '<p>将使用 shutdown -r 命令重启</p><p>重启后切勿重复提交本页！</p>'
         if get_action == 'h':
             context['page_title'] = '关机'
             context['help_text'] = '<h5>注意</h5>' \
                                    '<p>提交后将执行关闭系统。所有服务将被停止，所有用户将被中断连接，电源也会关闭(如果您的硬件支持的话)</p>' \
-                                   '<p>将使用 shutdown -h 命令关机</p>'
+                                   '<p>将使用 shutdown -h 命令关机</p><p>重启后切勿重复提交本页！</p>'
         return context
 
     def form_valid(self, form):

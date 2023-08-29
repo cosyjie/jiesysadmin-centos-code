@@ -18,9 +18,13 @@ from django.http import HttpResponse
 from django.shortcuts import render
 
 
-def import_iter(request):
-    p = subprocess.Popen('cat /opt/install01.sh', shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, encoding='utf-8')
-    return render(request, 'system/xterm.html', {'content': 'd'})
+# def import_iter(request):
+#     # p = subprocess.Popen('cat /opt/install01.sh', shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, encoding='utf-8')
+#     return render(request, 'system/xterm.html', {'content': 'd'})
+#
+
+pyenv_path = '/root/.pyenv/'
+pyenv_run_file = pyenv_path + '/libexec/pyenv'
 
 
 class PythonContextMixin(DevLanguageContextMixin):
@@ -33,7 +37,7 @@ class PythonContextMixin(DevLanguageContextMixin):
 
 def get_pyenv_installed():
     """获取pyenv的python版本"""
-    rootdir = '/cosyjieserver/.pyenv/versions/'
+    rootdir = pyenv_path + 'versions/'
     rlist = []
     for file in os.listdir(rootdir):
         d = os.path.join(rootdir, file)
@@ -51,22 +55,24 @@ def get_pyenv_installed():
 
 
 def get_pyenv_py_list():
-    run = subprocess.run("pyenv install --list", shell=True, capture_output=True, encoding='utf-8')\
-        .stdout.strip().split('\n')
+    get_run = subprocess.run(pyenv_run_file + " install --list", shell=True, capture_output=True, encoding='utf-8')
+    run = get_run.stdout.strip().split('\n')
     del run[0]
     return_list = []
     installed = get_pyenv_installed()
     for v in run:
         v_t = v.strip()
         v = v_t.split('.')
-        if v[0].isdigit() and v[1].isdigit() and v[2].isdigit():
-            if v_t not in installed:
-                if (int(v[0]) == 2 and int(v[1]) >= 7 and int(v[2]) >= 5) or int(v[0]) >= 3:
-                    return_list.append(v_t)
+        if len(v) == 3:
+            if v[0].isdigit() and v[1].isdigit() and v[2].isdigit():
+                if v_t not in installed:
+                    if (int(v[0]) == 2 and int(v[1]) == 7 and int(v[2]) >= 10) or int(v[0]) >= 3:
+                        return_list.append(v_t)
         # if re.match("^([3-9]\d|[3-9])(\.([1-9]\d|\d)){2}$", v):
         #     check = v.split('.')
         #     if v not in installed and int(check[1]) >= 3:
         #         return_list.append(v)
+
     return return_list
 
 
@@ -86,8 +92,9 @@ class PythonDelView(PythonContextMixin, RedirectView):
 
     def get(self, request, *args, **kwargs):
         run = subprocess.run(
-            'pyenv uninstall -f ' + self.kwargs.get('version'), shell=True, capture_output=True, encoding='utf-8'
+            pyenv_run_file + ' uninstall -f ' + self.kwargs.get('version'), shell=True, capture_output=True, encoding='utf-8'
         )
+        open('test.log', 'w').write('stdout:' + run.stdout + 'stderr:' + run.stderr)
         if run.stderr:
             messages.warning(self.request, run.stderr)
         return super().get(request, *args, **kwargs)
@@ -105,7 +112,8 @@ class PythonInstallView(PythonContextMixin, FormView):
             {'title': 'python环境', 'href': reverse('devpython:index'), 'active': False},
             {'title': '安装Python', 'href': '', 'active': True},
         ]
-        context['pylist'] = get_pyenv_py_list()
+        get_list = get_pyenv_py_list()
+        context['py_version_list'] = get_list
         return context
 
 
@@ -121,7 +129,7 @@ def python_download(request):
     if website == 'huaweicloud':
         url = 'https://mirrors.huaweicloud.com/python/{}/Python-{}.tar.xz'.format(version, version)
     if url:
-        run_cmd = 'wget "{}" -O /cosyserver/.pyenv/cache/Python-{}.tar.xz'.format(url, version, version)
+        run_cmd = 'wget "{}" -O /root/.pyenv/cache/Python-{}.tar.xz'.format(url, version, version)
         run_end = subprocess.run(run_cmd, shell=True, capture_output=True, encoding='utf-8')
     return_dict = {'run_end': run_end.returncode, 'showprocess': ''}
     if run_end.stdout:
@@ -135,10 +143,10 @@ def python_install_run(request):
     version = request.POST.get('version')
     v = version.split('.')
     if int(v[1]) >= 10:
-        run_cmd = 'CPPFLAGS="$(pkg-config --cflags openssl11)" LDFLAGS="$(pkg-config --libs openssl11)" pyenv install ' \
-                  + version
+        run_cmd = ('CPPFLAGS="$(pkg-config --cflags openssl11)" LDFLAGS="$(pkg-config --libs openssl11)" '
+                   + pyenv_run_file + ' install ') + version
     else:
-        run_cmd = 'pyenv install ' + version
+        run_cmd = pyenv_run_file + ' install ' + version
 
     run_end = subprocess.run(run_cmd, shell=True, capture_output=True, encoding='utf-8')
     return_dict = {'run_end': run_end.returncode, 'showprocess': ''}
@@ -146,5 +154,4 @@ def python_install_run(request):
         return_dict['showprocess'] = run_end.stdout.replace('\n', '</br>')
     if run_end.stderr:
         return_dict['showprocess'] = run_end.stderr.replace('\n', '</br>')
-
     return JsonResponse(return_dict, safe=False)

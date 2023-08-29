@@ -5,8 +5,17 @@
 {% block pagecontent %}
 {% if process %}
 <div class="card">
+    <div class="card-header bg-light">
+        <div class="card-tools">
+        {% if process.status == 'stopped' %}
+            <a href="{% url 'system:process:action' listtype 'resume' process.pid %}" class="btn btn-info">恢复进程</a>
+        {% else %}
+            <a href="{% url 'system:process:action' listtype 'pause' process.pid %}" class="btn btn-warning">暂停进程</a>
+        {% endif %}
+            <a href="{% url 'system:process:action' listtype 'kill' process.pid %}" class="btn btn-danger">关闭进程</a>
+        </div>
+    </div>
     <div class="card-body">
-
         <dl class="row">
           <dt class="col-sm-1">进程标识</dt>
           <dd class="col-sm-11">{{ process.pid }}</dd>
@@ -40,14 +49,6 @@
           </dd>
         </dl>
 
-    </div>
-    <div class="card-footer">
-        {% if process.status == 'stopped' %}
-            <a href="{% url 'system:process:action' listtype 'resume' process.pid %}" class="btn btn-info">恢复进程</a>
-        {% else %}
-            <a href="{% url 'system:process:action' listtype 'pause' process.pid %}" class="btn btn-warning">暂停进程</a>
-        {% endif %}
-            <a href="{% url 'system:process:action' listtype 'kill' process.pid %}" class="btn btn-danger">关闭进程</a>
     </div>
 </div>
 {% else %}

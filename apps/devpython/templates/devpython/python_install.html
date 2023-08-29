@@ -80,7 +80,7 @@ $(document).ready(function(){
             error: function (){
                 $('#runinfo').html('');
                 $('#runinfo').append('<p>提交有故障!~</p>');
-            }
+             }
         })
     }
 
@@ -98,7 +98,7 @@ $(document).ready(function(){
              <select id="id_version" name="version" class="form-control select2 validate[required]"
                      data-errormessage-value-missing="请选择要安装的版本">
              <option value="">请选择...</option>
-    {% for py in pylist %}
+    {% for py in py_version_list %}
     <option value="{{ py }}">{{ py }}</option>
     {% endfor %}
              </select>

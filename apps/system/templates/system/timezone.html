@@ -1,0 +1,97 @@
+{% extends 'layout/layout_main.html' %}
+{% load frame_html %}
+{% load frame_plugins %}
+{% load frame_helper %}
+
+{% block css_files %}
+    {% jquery_validation_engine 'css' %}
+    {% select2 'css' %}
+    {% icheck_bootstrap %}
+    {% jquery_ui 'css' %}
+{% endblock %}
+
+{% block js_files %}
+    {% jquery_validation_engine 'js' %}
+    {% select2 'js' %}
+    {% jquery_ui 'js' %}
+{% endblock %}
+
+{% block js_code %}
+<script type="text/javascript">
+$(document).ready(function(){
+    {% select2 'jscode' %}
+    {% jquery_validation_engine 'jscode' form_id='form' %}
+    $("#datepicker").datepicker({
+        changeMonth: true,
+        changeYear: true,
+        regional: 'zn-CN',
+        dateFormat: 'yy-mm-dd',
+        altField: "#id_set_date",
+        altFormat: "yy-mm-dd",
+        defaultDate: '{{ form.set_date.value }}'
+    });
+    $("#hour").spinner({min: 0,max: 23});
+    $("#minute").spinner({min: 0,max: 23});
+    $("#second").spinner({min: 0,max: 23});
+})
+</script>
+{% endblock  %}
+
+{% block pagecontent %}
+    {% if messages %}
+<div class="alert alert-warning alert-dismissible">
+<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+<h5><i class="icon fas fa-exclamation-triangle"></i>执行错误</h5>
+    {% for message in messages %}{{ message }}{% endfor %}
+</div>
+    {% endif %}
+<div class="col-md-6">
+    <form id="form" name="form" method="post">{% csrf_token %}
+        <div class="card">
+            <div class="card-body">
+                <div class="clearfix">
+                    <div class="col-md-4 float-left">时区</div>
+                    <div class="col-md-8 float-left">
+                        <select id="id_zone" name="zone" class="select2 form-control validate[required]">
+{% for zone in zone_list %}
+  <option value="{{ zone }}"{% if zone in current_zone %} selected{% endif %}>{{ zone }}</option>
+{% endfor %}
+                        </select>
+                    </div>
+                </div>
+            <hr/>
+                <div class="clearfix">
+                    <div class="col-md-4 float-left">设置日期时间：</div>
+                    <div class="col-md-8 float-left">
+                        <p>{{ time }}</p>
+                        <div class="icheck-primary d-inline">
+<input type="radio" id="id_time_sync_1" name="time_sync" value="1" {% if time_sync == 'enabled' %} checked{% endif %}
+       onclick="document.getElementById('show_set_date').style.display='none';">
+                            <label for="id_time_sync_1">自动网络同步</label>
+                        </div>
+                        <div class="icheck-primary d-inline">
+<input type="radio" id="id_time_sync_2" name="time_sync" value="2" {% if time_sync == 'disabled' %} checked{% endif %}
+        onclick="document.getElementById('show_set_date').style.display='';">
+                            <label for="id_time_sync_2">手动修改</label>
+                        </div>
+                   </div>
+                    </div>
+            <div class="row mt-3" id="show_set_date" style="display: {% if time_sync == 'enabled' %}none{% else %}{% endif %};">
+<div class="col-md-6">
+    <div id="datepicker" class="float-right"></div>{{ form.set_date }}
+</div>
+<div class="col-md-6" >
+    <div class="form-group"><label for="id_hour" class="mr-2">时</label>{{ form.hour }}</div>
+    <div class="form-group"><label for="id_minute" class="mr-2">分</label>{{ form.minute }}</div>
+    <div class="form-group"><label for="id_second" class="mr-2">秒</label>{{ form.second }}</div>
+</div>
+            </div>
+                </div>
+
+            <div class="card-footer">
+                {% form_btn 'submit' %}
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

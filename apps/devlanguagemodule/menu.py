@@ -1,7 +1,7 @@
 from django.urls import reverse
 
 menu = {
-    'devlanguage': {
+    'devlanguagemodule': {
         'title': '开发语言配置',
         'href': '',
         'ico': 'fas fa-code',

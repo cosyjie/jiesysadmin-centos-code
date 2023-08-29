@@ -2,12 +2,9 @@ from .views_system import SystemMixin
 from django.views.generic.base import TemplateView, RedirectView
 from django.urls import reverse, reverse_lazy
 from django.contrib import messages
-from django.http import HttpResponseRedirect
 from django.shortcuts import redirect
 import psutil
 import datetime
-
-from pprint import pprint as pp
 
 
 class ProcessContextMixin(SystemMixin):

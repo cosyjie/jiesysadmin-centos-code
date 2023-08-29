@@ -133,3 +133,58 @@ class FileDownloadForm(FormBase):
             'data-errormessage-value-missing': '* 下载URL地址不能为空！',
         })
     )
+
+
+class UserAddForm(FormBase):
+    real_name = forms.CharField(label='全名*', required=True, widget=forms.TextInput(attrs={
+            'class': 'form-control validate[required]',
+            'data-errormessage-value-missing': '* 全名不能为空！',
+        }))
+    user_name = forms.CharField(label='用户名*', required=True, widget=forms.TextInput(attrs={
+            'class': 'form-control validate[required]',
+            'data-errormessage-value-missing': '* 用户名不能为空！',
+        }))
+    pw1 = forms.CharField(label='密码*', required=True, widget=forms.PasswordInput(attrs={
+            'class': 'form-control validate[required, minSize[8]]',
+            'data-errormessage-value-missing': '* 密码不能为空！',
+        }))
+    pw2 = forms.CharField(label='密码确认*', required=True, widget=forms.PasswordInput(attrs={
+            'class': 'form-control validate[required, equals[id_pw1]]',
+            'data-errormessage-value-missing': '* 确定不能为空！',
+        }))
+
+
+class SystemUserForm(FormBase):
+    real_name = forms.CharField(label='全名*', required=True, widget=forms.TextInput(attrs={
+            'class': 'form-control col-sm-4 validate[required]',
+            'data-errormessage-value-missing': '* 全名不能为空！',
+    }))
+    is_admin = forms.BooleanField(label='角色', required=False)
+    is_locked = forms.BooleanField(label='锁定帐号', required=False)
+
+
+class SystemUserDelForm(FormBase):
+    del_home = forms.BooleanField(label='同时删除用户主目录数据', required=False)
+
+
+class SystemUserPwdForm(FormBase):
+    pw1 = forms.CharField(label='密码*', required=True, widget=forms.PasswordInput(attrs={
+            'class': 'form-control validate[required, minSize[8]]',
+            'data-errormessage-value-missing': '* 密码不能为空！',
+        }))
+    pw2 = forms.CharField(label='密码确认*', required=True, widget=forms.PasswordInput(attrs={
+            'class': 'form-control validate[required, equals[id_pw1]]',
+            'data-errormessage-value-missing': '* 确定不能为空！',
+        }))
+
+
+class TimezoneForm(FormBase):
+    zone = forms.CharField(label='时区')
+    time_sync = forms.IntegerField()
+    # time_set = forms.ChoiceField(label='手动指定')
+    set_date = forms.DateField(widget=forms.HiddenInput())
+    hour = forms.IntegerField(min_value=0, max_value=23)
+    minute = forms.IntegerField(min_value=0, max_value=60)
+    second = forms.IntegerField(min_value=0, max_value=60)
+
+

@@ -7,8 +7,6 @@ import subprocess
 from datetime import datetime
 from django.views.generic.base import TemplateView, RedirectView
 from django.views.generic.edit import FormView
-from django.http import JsonResponse
-from django.contrib import messages
 from django.urls import reverse, reverse_lazy
 from django.contrib import messages
 
@@ -159,7 +157,7 @@ class FileEditView(SysfilesMixin, FormView):
     def form_valid(self, form):
         path = form.cleaned_data.get('path')
         filename = form.cleaned_data.get('filename')
-        filecontent = form.cleaned_data.get('filecontent')
+        filecontent = form.cleaned_data.get('filecontent').replace('\r\n', '\n').replace('\r', '\n')
         filepath = os.path.join(path, filename)
         file = open(filepath, 'w')
         file.write(filecontent)

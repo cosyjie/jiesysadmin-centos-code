@@ -1,5 +1,5 @@
 from django.urls import path, include
-from . import view_xterm
+# from . import view_xterm
 
 app_name = 'system'
 
@@ -9,4 +9,6 @@ urlpatterns = [
     path('process/', include('apps.system.urls_process', namespace='process')),
     # path('terminal/', view_xterm.index, name='terminal'),
     path('sysfiles/', include('apps.system.urls_sysfiles', namespace='sysfiles')),
+    path('usersadmin/', include('apps.system.urls_usersadmin', namespace='usersadmin')),
+    path('timezone/', include('apps.system.urls_timezone', namespace='timezone')),
 ]

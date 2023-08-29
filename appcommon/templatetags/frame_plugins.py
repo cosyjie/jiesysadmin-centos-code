@@ -128,3 +128,34 @@ def codemirror(file_type, id_element=''):
 
         )
 
+
+@register.simple_tag
+def icheck_bootstrap():
+    this_dir = 'icheck-bootstrap/'
+    return format_html(
+        template_file_css, plugin_dir + this_dir + 'icheck-bootstrap.min.css'
+    )
+
+
+@register.simple_tag
+def jquery_inputmask():
+    this_dir = 'inputmask/'
+    return format_html(
+        template_file_js + template_file_js,
+        plugin_dir + 'moment/moment.min.js',
+        plugin_dir + this_dir + 'jquery.inputmask.min.js'
+    )
+
+
+@register.simple_tag
+def jquery_ui(file_type):
+    this_dir = 'jquery-ui/'
+    if file_type == 'css':
+        return format_html(template_file_css, plugin_dir + this_dir + 'jquery-ui.css')
+    if file_type == 'js':
+        return format_html(
+            template_file_js + template_file_js + template_file_js,
+            plugin_dir + this_dir + 'jquery-ui.min.js',
+            plugin_dir + this_dir + 'external/jquery-mousewheel/jquery.mousewheel.js',
+            plugin_dir + this_dir + 'datepicker-zh-CN.js',
+        )

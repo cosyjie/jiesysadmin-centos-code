@@ -11,6 +11,9 @@ menu = {
             {'name': 'process', 'title': '进程管理', 'href': reverse('system:process:list', kwargs={'listtype': 'all'})},
             # {'name': 'terminal', 'title': '终端', 'href': reverse('system:terminal')},
             {'name': 'sysfiles', 'title': '文件管理', 'href': reverse('system:sysfiles:list')},
+            {'name': 'usersadmin', 'title': '用户', 'href': reverse('system:usersadmin:list')},
+            {'name': 'timezone', 'title': '时区和时间', 'href': reverse('system:timezone:index')},
+
         ]
     }
 }

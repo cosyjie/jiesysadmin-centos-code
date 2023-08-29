@@ -1,0 +1,43 @@
+{% extends 'layout/layout_main.html' %}
+
+{% block pagecontent %}
+<div class="card card-gray card-tabs">
+    <div class="card-header p-0 pt-1">
+        <ul class="nav nav-tabs">
+<li class="nav-item">
+<a class="nav-link active" href="{% url 'system:usersadmin:list' %}">帐号</a>
+</li>
+<li class="nav-item">
+<a class="nav-link" href="{% url 'system:usersadmin:who_list' %}">当前登录</a>
+</li>
+        </ul>
+    </div>
+    <div class="card-body">
+
+        <a href="{% url 'system:usersadmin:add' %}" class="btn btn-outline-success margin_right_10">
+            <i class="fa fa-plus"></i> 新建用户
+        </a>
+
+        <table class="table table-bordered table-hover table-sm  mt-2">
+          <thead class="thead-light">
+            <tr>
+                <th>用户名</th>
+                <th>用户ID</th>
+                <th>全名</th>
+                <th>主目录</th>
+            </tr>
+          </thead>
+          <tbody>
+    {% for user, info in users.items %}
+            <tr>
+              <td><a href="{% url 'system:usersadmin:detail' user %}">{{ user }}</a></td>
+              <td>{{ info.uid }}</td>
+              <td>{{ info.describe }}</td>
+              <td>{{ info.home }}</td>
+            </tr>
+    {% endfor%}
+          </tbody>
+        </table>
+</div>
+</div>
+{% endblock %}

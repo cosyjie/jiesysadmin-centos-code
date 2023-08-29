@@ -20,8 +20,8 @@ $(document).ready(function(){
     {% for message in messages %}{{ message }}{% endfor %}
 </div>
     {% endif %}
-    <div class="card card-yellow card-outline card-outline-tabs">
-    <div class="card-header p-0 border-bottom-0">
+    <div class="card card-gray card-tabs">
+    <div class="card-header p-0 pt-1">
         <ul class="nav nav-tabs">
           <li class="nav-item">
             <a class="nav-link{% if list_type == 'all' %} active{% endif %}" href="{% url 'system:process:list' 'all' %}">所有进程</a>
