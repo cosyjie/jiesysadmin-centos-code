@@ -1,7 +1,7 @@
 asgiref==3.7.2
 cffi==1.15.1
 cryptography==41.0.3
-Django==4.2.4
+Django==4.2.14
 gunicorn==21.2.0
 packaging==23.1
 psutil==5.9.5
